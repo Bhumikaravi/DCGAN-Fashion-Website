@@ -261,6 +261,38 @@ if "generated_images" not in st.session_state:
 if "training_complete" not in st.session_state:
     st.session_state.training_complete = False
 
+# Auto-load pre-trained fashion model if available so fashion clothing is ready immediately
+if not st.session_state.models_ready and CHECKPOINT_PATH.exists():
+    try:
+        (
+            init_gen,
+            init_disc,
+            init_opt_g,
+            init_opt_d,
+        ) = create_models(0.0002)
+        saved_epoch, saved_history = load_checkpoint(
+            str(CHECKPOINT_PATH),
+            init_gen,
+            init_disc,
+            init_opt_g,
+            init_opt_d,
+            device=str(DEVICE),
+        )
+        st.session_state.generator = init_gen
+        st.session_state.discriminator = init_disc
+        st.session_state.optimizer_g = init_opt_g
+        st.session_state.optimizer_d = init_opt_d
+        st.session_state.epoch_history = saved_history
+        st.session_state.models_ready = True
+        st.session_state.training_complete = True
+
+        init_gen.eval()
+        with torch.no_grad():
+            sample_noise = torch.randn(16, LATENT_DIM, 1, 1, device=DEVICE)
+            st.session_state.generated_images = init_gen(sample_noise).cpu()
+    except Exception:
+        pass
+
 
 # ============================================================
 # 4. HEADER
@@ -326,9 +358,15 @@ with st.sidebar:
         step=1,
     )
 
+    data_limit = st.selectbox(
+        "Training image limit",
+        [100, 250, 500, 1000],
+        index=1,
+    )
+
     st.caption(
         "ℹ️ Fashion-MNIST downloads automatically. "
-        "Synthetic mode requires image files."
+        "Synthetic mode uses generated fashion silhouettes."
     )
 
     side_start = st.button(
@@ -372,7 +410,7 @@ with col1:
 with col2:
     st.metric(
         label="Image Limit",
-        value=DATA_LIMIT,
+        value=data_limit,
     )
 
 with col3:
@@ -470,7 +508,7 @@ if start_button:
             loader = get_dataloader(
                 source=dataset_source,
                 batch_size=batch_size,
-                limit=DATA_LIMIT,
+                limit=data_limit,
             )
 
         # Initialize models
@@ -611,6 +649,32 @@ if save_button:
 
 if generate_button:
     if not st.session_state.models_ready:
+        if CHECKPOINT_PATH.exists():
+            try:
+                (
+                    g_gen,
+                    g_disc,
+                    g_opt_g,
+                    g_opt_d,
+                ) = create_models(0.0002)
+                saved_ep, saved_hist = load_checkpoint(
+                    str(CHECKPOINT_PATH),
+                    g_gen,
+                    g_disc,
+                    g_opt_g,
+                    g_opt_d,
+                    device=str(DEVICE),
+                )
+                st.session_state.generator = g_gen
+                st.session_state.discriminator = g_disc
+                st.session_state.optimizer_g = g_opt_g
+                st.session_state.optimizer_d = g_opt_d
+                st.session_state.epoch_history = saved_hist
+                st.session_state.models_ready = True
+            except Exception:
+                pass
+
+    if not st.session_state.models_ready:
         st.warning(
             "Train a model or load a checkpoint first."
         )
@@ -632,7 +696,7 @@ if generate_button:
                     st.session_state.generator(noise).cpu()
                 )
 
-            st.success("New images generated!")
+            st.success("✨ New fashion clothing items generated!")
 
         except Exception as exc:
             st.error("Image generation failed.")

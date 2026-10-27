@@ -21,12 +21,13 @@ def find_synthetic_images():
     root = Path(__file__).resolve().parent
 
     folders = [
+        root / "data" / "synthetic",
+        root / "data" / "synthetic_images",
         root / "synthetic_images",
         root / "generated_images",
         root / "synthetic",
         root / "assets" / "synthetic_images",
         root / "assests" / "synthetic_images",
-        root / "data" / "synthetic_images",
     ]
 
     extensions = {".png", ".jpg", ".jpeg", ".bmp", ".webp"}
@@ -45,15 +46,26 @@ def find_synthetic_images():
 
 
 class SyntheticDataset(Dataset):
-    """Load existing synthetic images."""
+    """Load existing synthetic images, or generate them automatically if missing."""
 
     def __init__(self, limit=100):
         self.files = find_synthetic_images()
 
         if not self.files:
+            try:
+                from generate_synthetic import generate_synthetic_dataset
+                root = Path(__file__).resolve().parent
+                synth_dir = root / "data" / "synthetic"
+                count = max(100, int(limit or 100))
+                generate_synthetic_dataset(output_dir=synth_dir, count=count)
+                self.files = find_synthetic_images()
+            except Exception:
+                pass
+
+        if not self.files:
             raise FileNotFoundError(
-                "Synthetic images not found. Select Fashion-MNIST "
-                "or add generated images to synthetic_images/."
+                "Synthetic images not found and could not be generated. "
+                "Please select Fashion-MNIST dataset."
             )
 
         if limit is not None:

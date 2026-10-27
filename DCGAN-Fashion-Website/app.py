@@ -39,30 +39,145 @@ CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
 CHECKPOINT_PATH = CHECKPOINT_DIR / "dcgan_checkpoint.pth"
 
 DATA_LIMIT = 100
-DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+DEVICE = torch.device(
+    "cuda" if torch.cuda.is_available() else "cpu"
+)
 
 
 # ============================================================
-# 2. STYLING
+# 2. STYLING - PURPLE THEME WITH READABLE TEXT
 # ============================================================
 
 st.markdown(
     """
     <style>
+    /* Main application background */
     .stApp {
-        background: linear-gradient(135deg, #faf7ff, #f2edff);
+        background: linear-gradient(
+            135deg,
+            #faf7ff,
+            #f2edff
+        );
+        color: #29213d;
     }
+
+    [data-testid="stAppViewContainer"] {
+        background: linear-gradient(
+            135deg,
+            #faf7ff,
+            #f2edff
+        );
+    }
+
+    /* Main headings */
+    [data-testid="stMain"] h1,
+    [data-testid="stMain"] h2,
+    [data-testid="stMain"] h3 {
+        color: #39205f !important;
+    }
+
+    /* Main text, labels and captions */
+    [data-testid="stMain"] p,
+    [data-testid="stMain"] label,
+    [data-testid="stMain"] [data-testid="stCaptionContainer"] {
+        color: #49365f !important;
+    }
+
+    /* Purple gradient hero banner */
     .hero {
-        background: linear-gradient(120deg, #6d28d9, #a78bfa);
-        color: white;
+        background: linear-gradient(
+            120deg,
+            #6d28d9,
+            #a78bfa
+        );
+        color: #ffffff;
         padding: 28px;
         border-radius: 18px;
         margin-bottom: 20px;
+        box-shadow: 0 5px 18px rgba(109, 40, 217, 0.15);
     }
+
     .hero h1 {
-        color: white;
+        color: #ffffff !important;
         margin-bottom: 8px;
     }
+
+    .hero p {
+        color: #ffffff !important;
+    }
+
+    /* KPI metric cards */
+    [data-testid="stMetric"] {
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid #ded0fa;
+        border-radius: 12px;
+        padding: 16px;
+    }
+
+    [data-testid="stMetricLabel"],
+    [data-testid="stMetricLabel"] *,
+    [data-testid="stMetricValue"],
+    [data-testid="stMetricValue"] * {
+        color: #39205f !important;
+    }
+
+    /* Sidebar */
+    [data-testid="stSidebar"] {
+        background: #262630;
+    }
+
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] p {
+        color: #ffffff !important;
+    }
+
+    /* Sidebar help and information text */
+    [data-testid="stSidebar"] [data-testid="stAlert"] p {
+        color: inherit !important;
+    }
+
+    /* Buttons */
+    [data-testid="stButton"] button {
+        border-radius: 10px;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    [data-testid="stButton"] button[kind="primary"] {
+        background: linear-gradient(
+            120deg,
+            #6d28d9,
+            #8b5cf6
+        );
+        color: #ffffff;
+        border: none;
+    }
+
+    [data-testid="stButton"] button:hover {
+        border-color: #8b5cf6;
+    }
+
+    /* Alerts */
+    [data-testid="stAlert"] {
+        border-radius: 10px;
+    }
+
+    /* Download buttons */
+    [data-testid="stDownloadButton"] button {
+        border-radius: 10px;
+        border: 1px solid #8b5cf6;
+    }
+
+    /* Tables */
+    [data-testid="stDataFrame"] {
+        border: 1px solid #ded0fa;
+        border-radius: 10px;
+    }
+
+    /* Small note */
     .small-note {
         color: #6b5b85;
         font-size: 0.95rem;
@@ -89,13 +204,19 @@ def create_models(learning_rate):
         lr=learning_rate,
         betas=(0.5, 0.999),
     )
+
     optimizer_d = torch.optim.Adam(
         discriminator.parameters(),
         lr=learning_rate,
         betas=(0.5, 0.999),
     )
 
-    return generator, discriminator, optimizer_g, optimizer_d
+    return (
+        generator,
+        discriminator,
+        optimizer_g,
+        optimizer_d,
+    )
 
 
 def initialize_session(learning_rate):
@@ -112,6 +233,7 @@ def initialize_session(learning_rate):
     st.session_state.training_complete = False
 
 
+# Initialize session variables
 if "models_ready" not in st.session_state:
     st.session_state.models_ready = False
 
@@ -133,21 +255,23 @@ st.markdown(
     """
     <div class="hero">
         <h1>👕 DCGAN Fashion Studio</h1>
-        Train a Deep Convolutional Generative Adversarial Network
-        and generate new fashion-like images using AI.
+        <p>
+            Train a Deep Convolutional Generative Adversarial
+            Network and generate new fashion-like images using AI.
+        </p>
     </div>
     """,
     unsafe_allow_html=True,
 )
 
 st.caption(
-    f"Device: {str(DEVICE).upper()} · "
+    f"Compute device: {str(DEVICE).upper()} | "
     f"Training image limit: {DATA_LIMIT}"
 )
 
 
 # ============================================================
-# 5. SIDEBAR SETTINGS
+# 5. SIDEBAR TRAINING CONTROLS
 # ============================================================
 
 with st.sidebar:
@@ -188,8 +312,8 @@ with st.sidebar:
     )
 
     st.info(
-        "Fashion-MNIST is downloaded automatically when possible. "
-        "Synthetic mode requires image files to exist in the project."
+        "Fashion-MNIST downloads automatically when possible. "
+        "Synthetic mode requires image files in the project."
     )
 
     start_button = st.button(
@@ -221,13 +345,22 @@ with st.sidebar:
 col1, col2, col3 = st.columns(3)
 
 with col1:
-    st.metric("Dataset", dataset_source)
+    st.metric(
+        label="Dataset",
+        value=dataset_source,
+    )
 
 with col2:
-    st.metric("Image limit", DATA_LIMIT)
+    st.metric(
+        label="Image Limit",
+        value=DATA_LIMIT,
+    )
 
 with col3:
-    st.metric("Compute device", str(DEVICE).upper())
+    st.metric(
+        label="Compute Device",
+        value=str(DEVICE).upper(),
+    )
 
 
 # ============================================================
@@ -240,7 +373,10 @@ if load_button:
             if not st.session_state.models_ready:
                 initialize_session(learning_rate)
 
-            saved_epoch, saved_history = load_checkpoint(
+            (
+                saved_epoch,
+                saved_history,
+            ) = load_checkpoint(
                 str(CHECKPOINT_PATH),
                 st.session_state.generator,
                 st.session_state.discriminator,
@@ -253,17 +389,17 @@ if load_button:
             st.session_state.training_complete = True
 
             st.success(
-                f"Checkpoint loaded successfully. "
+                "Checkpoint loaded successfully. "
                 f"Saved epoch: {saved_epoch}"
             )
 
         except Exception as exc:
             st.error("Could not load the checkpoint.")
             st.exception(exc)
+
     else:
         st.warning(
-            f"No checkpoint found at {CHECKPOINT_PATH}. "
-            "Train the model and save it first."
+            "No checkpoint found. Train the model and save it first."
         )
 
 
@@ -273,6 +409,7 @@ if load_button:
 
 if start_button:
     try:
+        # Prepare the selected dataset
         with st.spinner("Preparing the dataset..."):
             loader = get_dataloader(
                 source=dataset_source,
@@ -280,12 +417,14 @@ if start_button:
                 limit=DATA_LIMIT,
             )
 
+        # Initialize models
         initialize_session(learning_rate)
 
         progress_bar = st.progress(0)
         status = st.empty()
         loss_area = st.empty()
 
+        # Train the DCGAN
         for epoch_index in range(epochs):
             status.info(
                 f"Training epoch {epoch_index + 1} of {epochs}..."
@@ -306,11 +445,19 @@ if start_button:
                 ),
             )
 
-            st.session_state.epoch_history.append({
-                "Epoch": len(st.session_state.epoch_history) + 1,
-                "Generator Loss": results["generator_loss"],
-                "Discriminator Loss": results["discriminator_loss"],
-            })
+            st.session_state.epoch_history.append(
+                {
+                    "Epoch": len(
+                        st.session_state.epoch_history
+                    ) + 1,
+                    "Generator Loss": results[
+                        "generator_loss"
+                    ],
+                    "Discriminator Loss": results[
+                        "discriminator_loss"
+                    ],
+                }
+            )
 
             progress_bar.progress(
                 (epoch_index + 1) / epochs
@@ -321,29 +468,43 @@ if start_button:
             )
 
             with loss_area.container():
+                st.subheader("Live Training Loss")
+
                 st.line_chart(
                     history_df.set_index("Epoch")[
-                        ["Generator Loss", "Discriminator Loss"]
+                        [
+                            "Generator Loss",
+                            "Discriminator Loss",
+                        ]
                     ]
                 )
 
+        # Mark training as complete
         st.session_state.training_complete = True
 
-        status.success("Training completed successfully!")
+        status.success(
+            "Training completed successfully!"
+        )
 
+        # Generate a sample gallery
         st.session_state.generator.eval()
 
         with torch.no_grad():
             noise = torch.randn(
-                16, LATENT_DIM, 1, 1, device=DEVICE
+                16,
+                LATENT_DIM,
+                1,
+                1,
+                device=DEVICE,
             )
+
             st.session_state.generated_images = (
                 st.session_state.generator(noise).cpu()
             )
 
         st.success(
-            "Generated sample images are ready. "
-            "Use Save Checkpoint to save your trained model."
+            "Sample images are ready! "
+            "Use Save Checkpoint to save the trained model."
         )
 
     except Exception as exc:
@@ -360,7 +521,10 @@ if start_button:
 
 if save_button:
     if not st.session_state.models_ready:
-        st.warning("Train a model or load a checkpoint first.")
+        st.warning(
+            "Train a model or load a checkpoint first."
+        )
+
     else:
         try:
             save_checkpoint(
@@ -369,13 +533,15 @@ if save_button:
                 st.session_state.discriminator,
                 st.session_state.optimizer_g,
                 st.session_state.optimizer_d,
-                epoch=len(st.session_state.epoch_history),
+                epoch=len(
+                    st.session_state.epoch_history
+                ),
                 history=st.session_state.epoch_history,
                 latent_dim=LATENT_DIM,
             )
 
             st.success(
-                f"Checkpoint saved successfully: {CHECKPOINT_PATH}"
+                "Checkpoint saved successfully."
             )
 
         except Exception as exc:
@@ -389,15 +555,23 @@ if save_button:
 
 if generate_button:
     if not st.session_state.models_ready:
-        st.warning("Train a model or load a checkpoint first.")
+        st.warning(
+            "Train a model or load a checkpoint first."
+        )
+
     else:
         try:
             st.session_state.generator.eval()
 
             with torch.no_grad():
                 noise = torch.randn(
-                    16, LATENT_DIM, 1, 1, device=DEVICE
+                    16,
+                    LATENT_DIM,
+                    1,
+                    1,
+                    device=DEVICE,
                 )
+
                 st.session_state.generated_images = (
                     st.session_state.generator(noise).cpu()
                 )
@@ -417,17 +591,27 @@ st.divider()
 st.header("📊 Training History")
 
 if st.session_state.epoch_history:
-    history_df = pd.DataFrame(st.session_state.epoch_history)
+    history_df = pd.DataFrame(
+        st.session_state.epoch_history
+    )
 
     st.line_chart(
         history_df.set_index("Epoch")[
-            ["Generator Loss", "Discriminator Loss"]
+            [
+                "Generator Loss",
+                "Discriminator Loss",
+            ]
         ]
     )
 
-    st.dataframe(history_df, use_container_width=True)
+    st.dataframe(
+        history_df,
+        use_container_width=True,
+    )
 
-    csv_data = history_df.to_csv(index=False).encode("utf-8")
+    csv_data = history_df.to_csv(
+        index=False
+    ).encode("utf-8")
 
     st.download_button(
         "⬇️ Download Training History (CSV)",
@@ -435,12 +619,15 @@ if st.session_state.epoch_history:
         file_name="dcgan_training_history.csv",
         mime="text/csv",
     )
+
 else:
-    st.info("Training history will appear here after training.")
+    st.info(
+        "Training history will appear here after training."
+    )
 
 
 # ============================================================
-# 12. GENERATED IMAGE GALLERY
+# 12. GENERATED FASHION IMAGE GALLERY
 # ============================================================
 
 st.divider()
@@ -449,6 +636,7 @@ st.header("🖼️ Generated Fashion Images")
 images = st.session_state.generated_images
 
 if images is not None:
+    # Convert image values from [-1, 1] to [0, 1]
     images = ((images + 1) / 2).clamp(0, 1)
 
     grid = make_grid(
@@ -462,29 +650,39 @@ if images is not None:
     if grid_np.shape[-1] == 1:
         grid_np = grid_np.squeeze(-1)
 
+    # Display image grid
     fig, ax = plt.subplots(figsize=(7, 7))
+
     ax.imshow(
         grid_np,
         cmap="gray" if grid_np.ndim == 2 else None,
     )
+
     ax.axis("off")
     st.pyplot(fig)
     plt.close(fig)
 
+    # Create downloadable PNG
     buffer = io.BytesIO()
 
-    fig_download, ax_download = plt.subplots(figsize=(7, 7))
+    fig_download, ax_download = plt.subplots(
+        figsize=(7, 7)
+    )
+
     ax_download.imshow(
         grid_np,
         cmap="gray" if grid_np.ndim == 2 else None,
     )
+
     ax_download.axis("off")
+
     fig_download.savefig(
         buffer,
         format="png",
         bbox_inches="tight",
         pad_inches=0,
     )
+
     plt.close(fig_download)
 
     st.download_button(
@@ -493,10 +691,11 @@ if images is not None:
         file_name="dcgan_fashion_images.png",
         mime="image/png",
     )
+
 else:
     st.info(
-        "Generated images will appear here after successful training "
-        "or after loading a trained checkpoint."
+        "Generated images will appear here after successful "
+        "training or after loading a trained checkpoint."
     )
 
 
@@ -505,6 +704,7 @@ else:
 # ============================================================
 
 st.divider()
+
 st.caption(
     "DCGAN Fashion Studio · PyTorch + Streamlit · "
     "Generator and Discriminator"

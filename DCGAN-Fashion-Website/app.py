@@ -144,6 +144,7 @@ st.markdown(
         border-radius: 10px;
         font-weight: 600;
         transition: all 0.2s ease;
+        padding: 0.5rem 1rem;
     }
 
     [data-testid="stButton"] button[kind="primary"] {
@@ -151,13 +152,27 @@ st.markdown(
             120deg,
             #6d28d9,
             #8b5cf6
-        );
-        color: #ffffff;
-        border: none;
+        ) !important;
+        color: #ffffff !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(109, 40, 217, 0.25);
+    }
+
+    [data-testid="stButton"] button[kind="secondary"] {
+        background: #ffffff;
+        color: #39205f;
+        border: 1px solid #c4b5fd;
+    }
+
+    [data-testid="stSidebar"] [data-testid="stButton"] button[kind="secondary"] {
+        background: #343440;
+        color: #ffffff !important;
+        border: 1px solid #585070;
     }
 
     [data-testid="stButton"] button:hover {
-        border-color: #8b5cf6;
+        border-color: #8b5cf6 !important;
+        transform: translateY(-1px);
     }
 
     /* Alerts */
@@ -311,35 +326,39 @@ with st.sidebar:
         step=1,
     )
 
-    st.info(
-        "Fashion-MNIST downloads automatically when possible. "
-        "Synthetic mode requires image files in the project."
+    st.caption(
+        "ℹ️ Fashion-MNIST downloads automatically. "
+        "Synthetic mode requires image files."
     )
 
-    start_button = st.button(
+    side_start = st.button(
         "🚀 Start Training",
         use_container_width=True,
         type="primary",
+        key="side_start",
     )
 
-    generate_button = st.button(
+    side_generate = st.button(
         "🖼️ Generate Images",
         use_container_width=True,
+        key="side_generate",
     )
 
-    save_button = st.button(
+    side_save = st.button(
         "💾 Save Checkpoint",
         use_container_width=True,
+        key="side_save",
     )
 
-    load_button = st.button(
+    side_load = st.button(
         "📂 Load Checkpoint",
         use_container_width=True,
+        key="side_load",
     )
 
 
 # ============================================================
-# 6. MODEL OVERVIEW
+# 6. MODEL OVERVIEW & MAIN ACTION CONTROLS
 # ============================================================
 
 col1, col2, col3 = st.columns(3)
@@ -361,6 +380,43 @@ with col3:
         label="Compute Device",
         value=str(DEVICE).upper(),
     )
+
+st.markdown("### ⚡ Quick Actions")
+act_col1, act_col2, act_col3, act_col4 = st.columns(4)
+
+with act_col1:
+    main_start = st.button(
+        "🚀 Start Training",
+        type="primary",
+        use_container_width=True,
+        key="main_start",
+    )
+
+with act_col2:
+    main_generate = st.button(
+        "🖼️ Generate Images",
+        use_container_width=True,
+        key="main_generate",
+    )
+
+with act_col3:
+    main_save = st.button(
+        "💾 Save Checkpoint",
+        use_container_width=True,
+        key="main_save",
+    )
+
+with act_col4:
+    main_load = st.button(
+        "📂 Load Checkpoint",
+        use_container_width=True,
+        key="main_load",
+    )
+
+start_button = main_start or side_start
+generate_button = main_generate or side_generate
+save_button = main_save or side_save
+load_button = main_load or side_load
 
 
 # ============================================================

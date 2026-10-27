@@ -1,5 +1,14 @@
 
 from pathlib import Path
+
+
+# Checkpoint directory
+CHECKPOINT_DIR = Path("checkpoints")
+CHECKPOINT_DIR.mkdir(parents=True, exist_ok=True)
+
+# Single checkpoint file for both models
+CHECKPOINT_PATH = CHECKPOINT_DIR / "dcgan_checkpoint.pth"
+
 import io
 import time
 
@@ -8,6 +17,8 @@ import streamlit as st
 import torch
 import matplotlib.pyplot as plt
 from torchvision.utils import make_grid
+
+
 
 
 # ============================================================
@@ -753,25 +764,28 @@ if start_training:
 # 16. SAVE CHECKPOINT
 # ============================================================
 
+
 if save_checkpoint_button:
     try:
         save_checkpoint(
-            str(GENERATOR_CHECKPOINT),
-            str(DISCRIMINATOR_CHECKPOINT),
+            str(CHECKPOINT_PATH),
             st.session_state.generator,
             st.session_state.discriminator,
             st.session_state.optimizer_g,
             st.session_state.optimizer_d,
+            epoch=len(st.session_state.epoch_history),
+            history=st.session_state.epoch_history,
+            latent_dim=LATENT_DIM,
         )
 
-        st.success(f"Checkpoint saved in {CHECKPOINT_DIR}")
+        st.success(
+            f"Checkpoint saved successfully: {CHECKPOINT_PATH}"
+        )
 
     except Exception as exc:
-        st.error(
-            "Checkpoint saving failed. Check save_checkpoint() "
-            "in train.py."
-        )
+        st.error("Checkpoint saving failed.")
         st.exception(exc)
+
 
 
 # ============================================================

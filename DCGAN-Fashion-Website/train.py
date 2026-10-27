@@ -21,12 +21,12 @@ def train_one_epoch(generator, discriminator, loader, optimizer_g, optimizer_d,
 
         # Discriminator update: classify real and generated images.
         optimizer_d.zero_grad(set_to_none=True)
-        real_logits = discriminator(real)
+        real_logits = discriminator(real).view(-1)
         loss_real = criterion(real_logits, real_labels)
 
         noise = torch.randn(size, latent_dim, 1, 1, device=device)
         fake = generator(noise)
-        fake_logits = discriminator(fake.detach())
+        fake_logits = discriminator(fake.detach()).view(-1)
         loss_fake = criterion(fake_logits, fake_labels)
 
         d_loss = loss_real + loss_fake
@@ -35,7 +35,7 @@ def train_one_epoch(generator, discriminator, loader, optimizer_g, optimizer_d,
 
         # Generator update: try to make fake images classify as real.
         optimizer_g.zero_grad(set_to_none=True)
-        generated_logits = discriminator(fake)
+        generated_logits = discriminator(fake).view(-1)
         g_loss = criterion(generated_logits, real_labels)
         g_loss.backward()
         optimizer_g.step()
@@ -70,7 +70,7 @@ def save_checkpoint(path, generator, discriminator, optimizer_g, optimizer_d,
 
 def load_checkpoint(path, generator, discriminator, optimizer_g, optimizer_d,
                     device="cpu"):
-    # Load only checkpoints you created/trust.
+    # Load checkpoints that you created or otherwise trust.
     try:
         checkpoint = torch.load(
             path, map_location=device, weights_only=True

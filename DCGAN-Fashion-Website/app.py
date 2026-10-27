@@ -511,8 +511,9 @@ if start_button:
                 limit=data_limit,
             )
 
-        # Initialize models
-        initialize_session(learning_rate)
+        # Use existing trained models if ready, otherwise initialize
+        if not st.session_state.models_ready:
+            initialize_session(learning_rate)
 
         progress_bar = st.progress(0)
         status = st.empty()

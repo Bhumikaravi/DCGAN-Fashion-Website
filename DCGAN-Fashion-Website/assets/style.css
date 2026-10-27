@@ -1,0 +1,125 @@
+
+:root {
+    --bg: #0b0b14;
+    --panel: #141421;
+    --purple: #7c3aed;
+    --purple-light: #a78bfa;
+    --text: #f5f3ff;
+    --muted: #a5a3b8;
+    --border: #302b46;
+}
+
+.stApp {
+    background:
+        radial-gradient(ellipse at 50% 0%, #20143a 0%, transparent 45%),
+        var(--bg);
+    color: var(--text);
+}
+
+[data-testid="stAppViewContainer"] {
+    background-color: var(--bg);
+}
+
+[data-testid="stHeader"] {
+    background: transparent;
+}
+
+.main .block-container {
+    max-width: 1450px;
+    padding-top: 2rem;
+    padding-bottom: 3rem;
+}
+
+[data-testid="stSidebar"] {
+    background: #11111e;
+    border-right: 1px solid var(--border);
+}
+
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    color: var(--purple-light);
+}
+
+h1, h2, h3 {
+    color: var(--text) !important;
+    letter-spacing: -0.4px;
+}
+
+p, label, li {
+    color: #e2deef;
+}
+
+[data-testid="stMetric"] {
+    background: linear-gradient(145deg, #191728, #12121e);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px;
+}
+
+[data-testid="stMetricLabel"] {
+    color: var(--muted);
+}
+
+[data-testid="stMetricValue"] {
+    color: var(--purple-light);
+    font-weight: 800;
+}
+
+.stButton > button,
+.stDownloadButton > button {
+    background: linear-gradient(135deg, #7c3aed, #9333ea);
+    color: white;
+    border: 1px solid #9b72ed;
+    border-radius: 10px;
+    min-height: 42px;
+    font-weight: 650;
+    transition: 0.2s ease;
+}
+
+.stButton > button:hover,
+.stDownloadButton > button:hover {
+    background: #6d28d9;
+    border-color: #c4b5fd;
+    color: white;
+}
+
+[data-baseweb="select"] > div,
+[data-baseweb="input"] > div {
+    background: #191827;
+    border-color: #3b3554;
+}
+
+[data-testid="stImage"] {
+    background: #141421;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 5px;
+    overflow: hidden;
+}
+
+[data-testid="stImage"] img {
+    border-radius: 7px;
+}
+
+[data-testid="stAlert"] {
+    border-radius: 10px;
+}
+
+[data-testid="stProgressBar"] > div > div {
+    background: linear-gradient(90deg, #7c3aed, #c084fc);
+}
+
+hr {
+    border-color: var(--border) !important;
+}
+
+footer {
+    visibility: hidden;
+}
+
+@media (max-width: 768px) {
+    .main .block-container {
+        padding: 1rem;
+    }
+}

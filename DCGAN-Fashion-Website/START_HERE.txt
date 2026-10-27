@@ -1,0 +1,21 @@
+DCGAN FASHION STUDIO — QUICK START (WINDOWS)
+
+1. Extract the ZIP file.
+2. Open the extracted folder in VS Code.
+3. Open Terminal > New Terminal.
+4. Run these commands:
+
+   python -m venv .venv
+   .venv\Scripts\activate
+   pip install -r requirements.txt
+   streamlit run app.py
+
+5. The website opens in your browser.
+6. Choose Synthetic first to test without downloading Fashion-MNIST.
+7. Click Start training.
+8. For real clothing images, select Fashion-MNIST. First download needs internet.
+
+To run test cases:
+   pytest -v
+
+This project uses a Streamlit web interface; no separate HTML server is needed.

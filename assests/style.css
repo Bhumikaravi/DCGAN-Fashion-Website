@@ -1,0 +1,139 @@
+/* DCGAN FASHION STUDIO — LIGHT PURPLE THEME */
+
+html,
+body,
+.stApp,
+[data-testid="stAppViewContainer"],
+[data-testid="stMain"] {
+    background: #f5f3ff !important;
+    color: #25213b !important;
+}
+
+[data-testid="stHeader"] {
+    background: #f5f3ff !important;
+}
+
+.main .block-container {
+    max-width: 1450px;
+    padding: 35px 35px 50px;
+}
+
+[data-testid="stSidebar"],
+[data-testid="stSidebar"]>div {
+    background: #ffffff !important;
+}
+
+[data-testid="stSidebar"] {
+    border-right: 1px solid #e5def8;
+}
+
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    color: #7047eb !important;
+}
+
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] p {
+    color: #49445f !important;
+}
+
+h1,
+h2,
+h3 {
+    color: #25213b !important;
+    font-weight: 750 !important;
+}
+
+p,
+label,
+li {
+    color: #49445f;
+}
+
+[data-testid="stMetric"] {
+    background: #ffffff !important;
+    border: 1px solid #e5def8 !important;
+    border-radius: 16px !important;
+    padding: 20px !important;
+    box-shadow: 0 5px 18px #7047eb10;
+}
+
+[data-testid="stMetricLabel"] {
+    color: #77738e !important;
+}
+
+[data-testid="stMetricValue"] {
+    color: #7047eb !important;
+    font-weight: 800 !important;
+}
+
+.stButton>button,
+.stDownloadButton>button {
+    background: linear-gradient(135deg, #7047eb, #9675f5) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 10px !important;
+    min-height: 43px;
+    font-weight: 650;
+}
+
+.stButton>button:hover,
+.stDownloadButton>button:hover {
+    background: #5933d2 !important;
+    color: white !important;
+}
+
+[data-baseweb="select"]>div,
+[data-baseweb="input"]>div {
+    background: white !important;
+    border-color: #ded6f2 !important;
+}
+
+[data-baseweb="select"] span,
+[data-baseweb="input"] input {
+    color: #25213b !important;
+}
+
+[data-testid="stImage"] {
+    background: white !important;
+    border: 1px solid #e5def8 !important;
+    border-radius: 13px !important;
+    padding: 6px !important;
+    box-shadow: 0 4px 14px #7047eb10;
+}
+
+[data-testid="stImage"] img {
+    border-radius: 8px;
+}
+
+[data-testid="stCaptionContainer"] {
+    color: #77738e !important;
+}
+
+[data-testid="stDataFrame"] {
+    border: 1px solid #e5def8;
+    border-radius: 12px;
+}
+
+[data-testid="stAlert"] {
+    border-radius: 11px;
+}
+
+[data-testid="stProgressBar"]>div>div {
+    background: linear-gradient(90deg, #7047eb, #b39cff) !important;
+}
+
+hr {
+    border-color: #e5def8 !important;
+}
+
+footer {
+    visibility: hidden;
+}
+
+@media (max-width: 768px) {
+    .main .block-container {
+        padding: 15px;
+    }
+}
